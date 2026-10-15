@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Work To‑Do · assign · log · notes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        body {
+            background: #e6e9ef;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 1.5rem;
+            margin: 0;
+        }
+
+        .app-card {
+            max-width: 1100px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 28px;
+            box-shadow: 0 20px 35px -8px rgba(0, 20, 30, 0.25), 0 10px 15px -6px rgba(0, 0, 0, 0.1);
+            padding: 2rem 2.25rem;
+            transition: all 0.2s;
+            border: 1px solid #d9e1e8;
+        }
+
+        @media (max-width: 700px) {
+            body { padding: 0.75rem; }
+            .app-card { padding: 1.5rem 1.25rem; border-radius: 20px; }
+        }
+
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #dfe6ed;
+            padding-bottom: 1rem;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #11212e;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header h1::before {
+            content: "✔";
+            font-size: 1.8rem;
+            font-weight: 400;
+            color: #2a6f97;
+            background: #e1f0fa;
+            width: 46px;
+            height: 46px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            line-height: 1;
+        }
+
+        .date-badge {
+            background: #eef3f8;
+            padding: 0.45rem 1rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #1d4a6b;
+            border: 1px solid #cbdae6;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            align-items: center;
+            margin-bottom: 1.75rem;
+            background: #f5f9fe;
+            padding: 0.9rem 1.2rem;
+            border-radius: 18px;
+            border: 1px solid #d6e3ef;
+        }
+
+        .add-form {
+            display: flex;
+            flex: 1;
+            gap: 0.6rem;
+            min-width: 240px;
+        }
+
+        .add-form input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border-radius: 40px;
+            border: 1px solid #c2d6e8;
+            background: #ffffff;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border 0.15s, box-shadow 0.15s;
+        }
+
+        .add-form input:focus {
+            border-color: #2a6f97;
+            box-shadow: 0 0 0 3px rgba(42, 111, 151, 0.15);
+        }
+
+        .add-form button {
+            background: #1f5e8a;
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.6rem;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.05s;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid #174a6b;
+        }
+
+        .add-form button:hover {
+            background: #154b6e;
+        }
+
+        .add-form button:active {
+            transform: scale(0.97);
+        }
+
+        .reset-btn {
+            background: #ffffff;
+            border: 1px solid #c2d6e8;
+            color: #2d5778;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.15s, border 0.15s, color 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .reset-btn:hover {
+            background: #f0f5fb;
+            border-color: #2a6f97;
+            color: #174a6b;
+        }
+
+        .reset-btn:active {
+            transform: scale(0.97);
+        }
+
+        /* task list */
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            min-height: 100px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.5rem 0.8rem 0.5rem 0.9rem;
+            background: #f9fcff;
+            border-radius: 14px;
+            border: 1px solid #dde7f0;
+            transition: background 0.15s, border-color 0.15s;
+            font-size: 1rem;
+            line-height: 1.4;
+            color: #102a3b;
+            position: relative;
+            animation: fadeIn 0.2s ease;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 550px) {
+            .task-item {
+                flex-wrap: wrap;
+                gap: 0.4rem;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .task-item:hover {
+            background: #f0f6fd;
+            border-color: #b9d0e3;
+        }
+
+        .task-check-label {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            flex: 1;
+            min-width: 180px;
+            cursor: pointer;
+        }
+
+        .task-check-label input[type="checkbox"] {
+            appearance: none;
+            width: 1.25rem;
+            height: 1.25rem;
+            min-width: 1.25rem;
+            border: 2px solid #9db7cc;
+            border-radius: 6px;
+            background: #fff;
+            display: grid;
+            place-content: center;
+            cursor: pointer;
+            transition: all 0.1s;
+            flex-shrink: 0;
+            margin: 0;
+        }
+
+        .task-check-label input[type="checkbox"]:checked {
+            background: #2a6f97;
+            border-color: #2a6f97;
+        }
+
+        .task-check-label input[type="checkbox"]:checked::before {
+            content: "✓";
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 700;
+            line-height: 1;
+            display: block;
+            text-align: center;
+        }
+
+        .task-check-label input[type="checkbox"]:focus-visible {
+            outline: 2px solid #2a6f97;
+            outline-offset: 2px;
+        }
+
+        .task-text {
+            flex: 1;
+            word-break: break-word;
+        }
+
+        .task-text.completed {
+            text-decoration: line-through;
+            color: #6f8da5;
+        }
+
+        /* assign dropdown */
+        .assign-select {
+            padding: 0.35rem 0.7rem;
+            border-radius: 30px;
+            border: 1px solid #c2d6e8;
+            background: #ffffff;
+            font-size: 0.8rem;
+            color: #1d3b4f;
+            font-weight: 500;
+            cursor: pointer;
+            outline: none;
+            transition: border 0.15s, box-shadow 0.15s;
+            max-width: 130px;
+            flex-shrink: 0;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%232a6f97' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.7rem center;
+            padding-right: 1.8rem;
+        }
+
+        .assign-select:focus {
+            border-color: #2a6f97;
+            box-shadow: 0 0 0 3px rgba(42, 111, 151, 0.12);
+        }
+
+        .assign-select option {
+            background: #fff;
+            color: #1d3b4f;
+        }
+
+        .task-remove {
+            background: none;
+            border: none;
+            color: #b0c6d9;
+            font-size: 1.3rem;
+            line-height: 1;
+            cursor: pointer;
+            padding: 0 0.2rem;
+            border-radius: 6px;
+            transition: color 0.15s, background 0.15s;
+            flex-shrink: 0;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            height: 26px;
+            margin-left: auto;
+        }
+
+        .task-remove:hover {
+            color: #c44536;
+            background: #fee9e5;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #8fa9bf;
+            font-style: italic;
+            padding: 2rem 1rem;
+            background: #fafdff;
+            border-radius: 14px;
+            border: 1px dashed #cbdae6;
+            font-size: 0.95rem;
+        }
+
+        /* ---------- ACTIVITY LOG + NOTES SECTION ---------- */
+        .activity-section {
+            margin-top: 1.8rem;
+            border-top: 2px solid #dfe6ed;
+            padding-top: 1.5rem;
+        }
+
+        .activity-header {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .activity-header h2 {
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            font-weight: 700;
+            color: #5c7a92;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .activity-header h2::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: #d6e1ea;
+        }
+
+        .activity-columns {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .activity-log {
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .notes-panel {
+            flex: 1;
+            min-width: 280px;
+        }
+
+        @media (max-width: 700px) {
+            .activity-header {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+            .activity-columns {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+        }
+
+        /* log form */
+        .log-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.9rem;
+        }
+
+        .log-form select {
+            padding: 0.6rem 1rem;
+            border-radius: 30px;
+            border: 1px solid #c2d6e8;
+            background: #ffffff;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #1d3b4f;
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%232a6f97' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.7rem center;
+            padding-right: 1.8rem;
+            min-width: 110px;
+        }
+
+        .log-form select:focus {
+            border-color: #2a6f97;
+            box-shadow: 0 0 0 3px rgba(42, 111, 151, 0.12);
+        }
+
+        .log-form input {
+            flex: 1;
+            min-width: 140px;
+            padding: 0.6rem 1rem;
+            border-radius: 30px;
+            border: 1px solid #c2d6e8;
+            background: #ffffff;
+            font-size: 0.85rem;
+            outline: none;
+            transition: border 0.15s, box-shadow 0.15s;
+        }
+
+        .log-form input:focus {
+            border-color: #2a6f97;
+            box-shadow: 0 0 0 3px rgba(42, 111, 151, 0.12);
+        }
+
+        .log-form button {
+            background: #1f5e8a;
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 0.6rem 1.4rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.15s;
+            white-space: nowrap;
+            border: 1px solid #174a6b;
+        }
+
+        .log-form button:hover {
+            background: #154b6e;
+        }
+
+        /* log entries list */
+        .log-entries {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            max-height: 220px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .log-entry {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #f9fcff;
+            border: 1px solid #dde7f0;
+            border-radius: 12px;
+            padding: 0.5rem 0.8rem;
+            font-size: 0.9rem;
+            color: #102a3b;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .log-entry .log-name {
+            font-weight: 600;
+            color: #1d4a6b;
+            min-width: 60px;
+            flex-shrink: 0;
+        }
+
+        .log-entry .log-action {
+            flex: 1;
+            word-break: break-word;
+        }
+
+        .log-entry .log-remove {
+            background: none;
+            border: none;
+            color: #b0c6d9;
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 0 0.2rem;
+            border-radius: 4px;
+            transition: color 0.15s;
+            line-height: 1;
+        }
+
+        .log-entry .log-remove:hover {
+            color: #c44536;
+        }
+
+        .log-empty {
+            color: #8fa9bf;
+            font-style: italic;
+            font-size: 0.85rem;
+            padding: 0.5rem 0;
+        }
+
+        /* notes textarea */
+        .notes-textarea {
+            width: 100%;
+            min-height: 180px;
+            padding: 0.9rem 1.1rem;
+            border-radius: 16px;
+            border: 1px solid #d6e3ef;
+            background: #fafdff;
+            font-size: 0.95rem;
+            font-family: inherit;
+            line-height: 1.5;
+            resize: vertical;
+            outline: none;
+            transition: border 0.15s, box-shadow 0.15s;
+            color: #102a3b;
+        }
+
+        .notes-textarea:focus {
+            border-color: #2a6f97;
+            box-shadow: 0 0 0 3px rgba(42, 111, 151, 0.12);
+            background: #ffffff;
+        }
+
+        .notes-textarea::placeholder {
+            color: #99b3c9;
+            font-style: italic;
+        }
+
+        /* footer */
+        .footer-note {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 2px dashed #cbdae6;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            font-size: 0.82rem;
+            color: #4d6b81;
+        }
+
+        .task-counter {
+            background: #eef3f8;
+            padding: 0.25rem 0.9rem;
+            border-radius: 30px;
+            font-weight: 600;
+            border: 1px solid #d0dfeb;
+            font-size: 0.8rem;
+        }
+
+        .storage-info {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .storage-info i {
+            font-style: normal;
+        }
+
+        .toast-message {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1d3c51;
+            color: white;
+            padding: 0.6rem 1.6rem;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+            z-index: 100;
+        }
+
+        .toast-message.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-card">
+        <!-- Header -->
+        <div class="header">
+            <h1>Daily To‑Do</h1>
+            <div class="date-badge" id="dateDisplay">📅 today</div>
+        </div>
+
+        <!-- Toolbar: add + reset -->
+        <div class="toolbar">
+            <form class="add-form" id="addForm">
+                <input type="text" id="taskInput" placeholder="Add a new task..." autocomplete="off" aria-label="New task">
+                <button type="submit" id="addBtn">➕ Add</button>
+            </form>
+            <button class="reset-btn" id="resetBtn" title="Reset list to default tasks">⟲ Reset</button>
+        </div>
+
+        <!-- Task list container -->
+        <div class="task-list" id="taskList">
+            <!-- tasks injected here -->
+        </div>
+
+        <!-- ====== ACTIVITY LOG + NOTES ====== -->
+        <div class="activity-section">
+            <div class="activity-header">
+                <h2>📋 Who did what (daily log)</h2>
+                <h2>📝 Notes / specific details</h2>
+            </div>
+            <div class="activity-columns">
+                <!-- LEFT: who did what log -->
+                <div class="activity-log">
+                    <form class="log-form" id="logForm">
+                        <select id="logName" aria-label="Select person">
+                            <option value="Rob">Rob</option>
+                            <option value="Austin">Austin</option>
+                            <option value="Rich">Rich</option>
+                            <option value="Bobby">Bobby</option>
+                        </select>
+                        <input type="text" id="logAction" placeholder="What they did..." autocomplete="off" aria-label="What they did">
+                        <button type="submit">Add</button>
+                    </form>
+                    <div class="log-entries" id="logEntries">
+                        <!-- log entries injected here -->
+                    </div>
+                </div>
+                <!-- RIGHT: notes -->
+                <div class="notes-panel">
+                    <textarea 
+                        class="notes-textarea" 
+                        id="notesArea" 
+                        placeholder="Write specific details, reminders, or extra notes here..."
+                        aria-label="Daily notes"
+                    ></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer-note">
+            <div class="task-counter" id="taskCounter">0 tasks</div>
+            <div class="storage-info">
+                <i>💾</i> auto‑saved locally
+            </div>
+        </div>
+    </div>
+
+    <!-- toast for feedback -->
+    <div class="toast-message" id="toast"></div>
+
+    <script>
+        (function() {
+            // ---- DEFAULT TASKS ----
+            const DEFAULT_TASKS = [
+                "Submit the scrap units in the system",
+                "Load up the scrap trailer before 9:00",
+                "Ask Carmie about same day check-ins because we're not going to be able to do everything",
+                "Let Bobby know we're not taking charge of garbage anymore",
+                "Finish building new load and scan it in",
+                "Get Lanes set up by pieces to make psycho count easier on Monday",
+                "Styrofoam and cardboard",
+                "I need to break down the rest of the empty boxes",
+                "Important submit Warehouse safety",
+                "Finished moving the partial load down",
+                "Start on another load"
+            ];
+
+            // Names for assignment dropdown & log
+            const ASSIGN_NAMES = ['Unassigned', 'Rob', 'Austin', 'Rich', 'Bobby'];
+            const LOG_NAMES = ['Rob', 'Austin', 'Rich', 'Bobby'];
+
+            // ---- STATE ----
+            let tasks = [];             // { id, text, completed, assignedTo }
+            let logEntries = [];        // { id, name, action }
+            const STORAGE_KEY = 'daily_todo_app_v2';
+            const LOG_KEY = 'daily_todo_log_v2';
+            const NOTES_KEY = 'daily_todo_notes_v2';
+
+            // ---- DOM elements ----
+            const taskListEl = document.getElementById('taskList');
+            const addForm = document.getElementById('addForm');
+            const taskInput = document.getElementById('taskInput');
+            const resetBtn = document.getElementById('resetBtn');
+            const taskCounter = document.getElementById('taskCounter');
+            const dateDisplay = document.getElementById('dateDisplay');
+            const toastEl = document.getElementById('toast');
+            const notesArea = document.getElementById('notesArea');
+            const logForm = document.getElementById('logForm');
+            const logName = document.getElementById('logName');
+            const logAction = document.getElementById('logAction');
+            const logEntriesEl = document.getElementById('logEntries');
+
+            // ---- utility: show toast ----
+            function showToast(msg, duration = 1800) {
+                toastEl.textContent = msg;
+                toastEl.classList.add('show');
+                clearTimeout(window._toastTimer);
+                window._toastTimer = setTimeout(() => {
+                    toastEl.classList.remove('show');
+                }, duration);
+            }
+
+            // ---- generate unique id ----
+            function generateId() {
+                return Date.now() + '-' + Math.random().toString(36).substring(2, 9);
+            }
+
+            // ---- set today's date ----
+            function setDateBadge() {
+                const d = new Date();
+                const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+                dateDisplay.textContent = '📅 ' + d.toLocaleDateString(undefined, options);
+            }
+
+            // ---- Load tasks ----
+            function loadTasks() {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored) {
+                    try {
+                        const parsed = JSON.parse(stored);
+                        if (Array.isArray(parsed) && parsed.length > 0) {
+                            tasks = parsed.map(t => ({
+                                id: t.id || generateId(),
+                                text: (t.text || '').trim(),
+                                completed: !!t.completed,
+                                assignedTo: t.assignedTo || 'Unassigned'
+                            })).filter(t => t.text.length > 0);
+                            return;
+                        }
+                    } catch (e) { /* fall through */ }
+                }
+                // default
+                tasks = DEFAULT_TASKS.map(text => ({
+                    id: generateId(),
+                    text: text.trim(),
+                    completed: false,
+                    assignedTo: 'Unassigned'
+                }));
+            }
+
+            // ---- Load log entries ----
+            function loadLog() {
+                const stored = localStorage.getItem(LOG_KEY);
+                if (stored) {
+                    try {
+                        const parsed = JSON.parse(stored);
+                        if (Array.isArray(parsed)) {
+                            logEntries = parsed.map(e => ({
+                                id: e.id || generateId(),
+                                name: LOG_NAMES.includes(e.name) ? e.name : 'Rob',
+                                action: (e.action || '').trim()
+                            })).filter(e => e.action.length > 0);
+                            return;
+                        }
+                    } catch (e) { /* fall through */ }
+                }
+                logEntries = [];
+            }
+
+            // ---- Load notes ----
+            function loadNotes() {
+                const stored = localStorage.getItem(NOTES_KEY);
+                if (stored) {
+                    notesArea.value = stored;
+                }
+            }
+
+            // ---- Save tasks ----
+            function saveTasks() {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+            }
+
+            // ---- Save log ----
+            function saveLog() {
+                localStorage.setItem(LOG_KEY, JSON.stringify(logEntries));
+            }
+
+            // ---- Save notes ----
+            function saveNotes() {
+                localStorage.setItem(NOTES_KEY, notesArea.value);
+            }
+
+            // ---- Render task list ----
+            function renderTasks() {
+                if (!taskListEl) return;
+
+                if (tasks.length === 0) {
+                    taskListEl.innerHTML = `<div class="empty-state">✨ No tasks yet. Add one above or reset to defaults.</div>`;
+                } else {
+                    const fragment = document.createDocumentFragment();
+                    tasks.forEach(task => {
+                        const div = document.createElement('div');
+                        div.className = 'task-item';
+                        div.dataset.id = task.id;
+
+                        const label = document.createElement('label');
+                        label.className = 'task-check-label';
+
+                        const cb = document.createElement('input');
+                        cb.type = 'checkbox';
+                        cb.checked = task.completed;
+                        cb.addEventListener('change', (e) => {
+                            e.stopPropagation();
+                            toggleTask(task.id, cb.checked);
+                        });
+
+                        const span = document.createElement('span');
+                        span.className = 'task-text' + (task.completed ? ' completed' : '');
+                        span.textContent = task.text;
+
+                        label.appendChild(cb);
+                        label.appendChild(span);
+
+                        // assign dropdown
+                        const select = document.createElement('select');
+                        select.className = 'assign-select';
+                        select.setAttribute('aria-label', `Assign task to person`);
+                        ASSIGN_NAMES.forEach(name => {
+                            const option = document.createElement('option');
+                            option.value = name;
+                            option.textContent = name;
+                            if (task.assignedTo === name) option.selected = true;
+                            select.appendChild(option);
+                        });
+                        select.addEventListener('change', (e) => {
+                            e.stopPropagation();
+                            updateAssignment(task.id, e.target.value);
+                        });
+
+                        // remove
+                        const removeBtn = document.createElement('button');
+                        removeBtn.className = 'task-remove';
+                        removeBtn.innerHTML = '✕';
+                        removeBtn.setAttribute('aria-label', `Remove task: ${task.text}`);
+                        removeBtn.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            removeTask(task.id);
+                        });
+
+                        div.appendChild(label);
+                        div.appendChild(select);
+                        div.appendChild(removeBtn);
+                        fragment.appendChild(div);
+                    });
+                    taskListEl.innerHTML = '';
+                    taskListEl.appendChild(fragment);
+                }
+
+                // counter
+                const total = tasks.length;
+                const completed = tasks.filter(t => t.completed).length;
+                taskCounter.textContent = `${total} task${total !== 1 ? 's' : ''} · ${completed} done`;
+
+                saveTasks();
+            }
+
+            // ---- Render log entries ----
+            function renderLog() {
+                if (!logEntriesEl) return;
+                if (logEntries.length === 0) {
+                    logEntriesEl.innerHTML = `<div class="log-empty">No entries yet. Add who did what above.</div>`;
+                    return;
+                }
+                const fragment = document.createDocumentFragment();
+                logEntries.forEach(entry => {
+                    const div = document.createElement('div');
+                    div.className = 'log-entry';
+                    div.dataset.id = entry.id;
+
+                    const nameSpan = document.createElement('span');
+                    nameSpan.className = 'log-name';
+                    nameSpan.textContent = entry.name;
+
+                    const actionSpan = document.createElement('span');
+                    actionSpan.className = 'log-action';
+                    actionSpan.textContent = entry.action;
+
+                    const removeBtn = document.createElement('button');
+                    removeBtn.className = 'log-remove';
+                    removeBtn.innerHTML = '✕';
+                    removeBtn.setAttribute('aria-label', `Remove log entry`);
+                    removeBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        removeLogEntry(entry.id);
+                    });
+
+                    div.appendChild(nameSpan);
+                    div.appendChild(actionSpan);
+                    div.appendChild(removeBtn);
+                    fragment.appendChild(div);
+                });
+                logEntriesEl.innerHTML = '';
+                logEntriesEl.appendChild(fragment);
+                saveLog();
+            }
+
+            // ---- Toggle task ----
+            function toggleTask(id, completed) {
+                const task = tasks.find(t => t.id === id);
+                if (task) {
+                    task.completed = completed;
+                    renderTasks();
+                }
+            }
+
+            // ---- Update assignment ----
+            function updateAssignment(id, assignedTo) {
+                const task = tasks.find(t => t.id === id);
+                if (task) {
+                    task.assignedTo = assignedTo;
+                    saveTasks();
+                    showToast(`Assigned to ${assignedTo}`, 1000);
+                }
+            }
+
+            // ---- Remove task ----
+            function removeTask(id) {
+                const task = tasks.find(t => t.id === id);
+                if (!task) return;
+                tasks = tasks.filter(t => t.id !== id);
+                renderTasks();
+                showToast(`Removed: "${task.text.length > 30 ? task.text.slice(0, 30) + '…' : task.text}"`);
+            }
+
+            // ---- Add task ----
+            function addTask(text) {
+                const trimmed = text.trim();
+                if (!trimmed) {
+                    showToast('Please enter a task', 1200);
+                    return false;
+                }
+                tasks.push({
+                    id: generateId(),
+                    text: trimmed,
+                    completed: false,
+                    assignedTo: 'Unassigned'
+                });
+                renderTasks();
+                showToast(`Added: "${trimmed.length > 30 ? trimmed.slice(0, 30) + '…' : trimmed}"`);
+                return true;
+            }
+
+            // ---- Add log entry ----
+            function addLogEntry(name, action) {
+                const trimmed = action.trim();
+                if (!trimmed) {
+                    showToast('Please enter what they did', 1200);
+                    return false;
+                }
+                logEntries.push({
+                    id: generateId(),
+                    name: name,
+                    action: trimmed
+                });
+                renderLog();
+                showToast(`Logged ${name}: "${trimmed.length > 30 ? trimmed.slice(0, 30) + '…' : trimmed}"`);
+                return true;
+            }
+
+            // ---- Remove log entry ----
+            function removeLogEntry(id) {
+                const entry = logEntries.find(e => e.id === id);
+                if (!entry) return;
+                logEntries = logEntries.filter(e => e.id !== id);
+                renderLog();
+                showToast(`Removed log: ${entry.name} – "${entry.action.length > 25 ? entry.action.slice(0, 25) + '…' : entry.action}"`);
+            }
+
+            // ---- Reset tasks (keep log & notes) ----
+            function resetToDefaults() {
+                if (!confirm('Reset task list to the original defaults? Your current tasks will be replaced. Log and notes will remain.')) {
+                    return;
+                }
+                tasks = DEFAULT_TASKS.map(text => ({
+                    id: generateId(),
+                    text: text.trim(),
+                    completed: false,
+                    assignedTo: 'Unassigned'
+                }));
+                renderTasks();
+                showToast('Task list reset to defaults');
+            }
+
+            // ---- Initialize ----
+            function init() {
+                setDateBadge();
+                loadTasks();
+                loadLog();
+                loadNotes();
+                renderTasks();
+                renderLog();
+
+                // add task form
+                addForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const text = taskInput.value.trim();
+                    if (text) {
+                        if (addTask(text)) {
+                            taskInput.value = '';
+                            taskInput.focus();
+                        }
+                    } else {
+                        showToast('Please enter a task', 1200);
+                    }
+                });
+
+                // reset button
+                resetBtn.addEventListener('click', resetToDefaults);
+
+                // log form
+                logForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const name = logName.value;
+                    const action = logAction.value.trim();
+                    if (action) {
+                        if (addLogEntry(name, action)) {
+                            logAction.value = '';
+                            logAction.focus();
+                        }
+                    } else {
+                        showToast('Please enter what they did', 1200);
+                    }
+                });
+
+                // notes auto-save
+                notesArea.addEventListener('input', saveNotes);
+                notesArea.addEventListener('blur', saveNotes);
+
+                // focus task input
+                taskInput.focus();
+            }
+
+            // start
+            init();
+        })();
+    </script>
+</body>
+</html>
